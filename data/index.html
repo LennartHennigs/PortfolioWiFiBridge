@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <title>Atari Portfolio Bridge</title>
+    <link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css">
+    <style>
+      body {font-family: sans-serif; font-size: 10pt; }
+      h2 {font-size: 1.5em; border-bottom: 1px solid black; margin-top: 2em; }
+      #fileList {font-family: 'Courier New', Courier, monospace; width: 500px; margin-top: 1em;}
+      #fileList div {padding: 0.33em; }
+      .icons a {opacity: 0; color: black;}
+      #fileList div:hover>.icons a { opacity: 1; }
+      .icons {width: 40px; }
+      form { padding-bottom: 2em; border-bottom: 1px solid black}
+      form input {margin-bottom: 0.75em;}
+      #displaySize { border: 0; background-color: white; }
+    </style>
+    <script>
+      
+function byID(id) {
+  return document.getElementById(id);
+}
+function isNSet(elem) {
+  return typeof elem == 'undefined';
+}
+function updateSize() {
+  var file    = byID('fileInput').files[0];
+  var submit  = byID('uploadSubmit');
+  var size    = byID('fileSize');
+  var display = byID('displaySize');
+  submit.disabled = (isNSet(file) || file.size == 0);
+  try {
+    size.value = file.size;
+    display.value = "(" + Math.round(file.size / 1024) + "k)";
+  } catch (err) {
+    display.value = "(0k)";
+  }
+}
+function getList() {
+  var dir = byID('listDir').value;
+  var url = "/list?dir=" + dir;
+  fetch(url)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      var list = byID('fileList');
+      list.innerHTML = "";
+      if (data.length == 0) {
+        list.innerHTML =  "no entries...";
+      } else {
+        for (var i = 0; i < data.length; i++) {
+          var path = dir.substring(0, dir.lastIndexOf("\\") + 1);
+          var div = document.createElement('div');
+          div.innerHTML =  `<span class="icons">
+          <a href="/view?`+ path + data[i].name + `" title="View"><i class="fa-regular fa-file"></i></a>
+          <a href="/download?` + path + data[i].name + `" title="Download"><i class="fa-solid fa-arrow-down"></i></a>
+          </span>` + data[i].name;
+          list.appendChild(div);
+        }
+      }
+    })
+    .catch(function (err) {
+    }); 
+}
+    </script>
+  </head>
+  <body>
+      <h1>Atari Portfolio Bridge</h1>
+      <h2>List & Download</h2>
+    <form action="" id="listForm" method="">
+      <input type="text" id="listDir" value="c:\*.*" />
+      <input type="button" value="Show Contents" onclick="getList()" />
+    </form>
+    <div id="fileList"></div>
+
+    <h2>Upload</h2>
+    <form action="/upload" id="uploadForm" method="post" enctype="multipart/form-data">
+      <input type="hidden" id="fileSize" name="fileSize" value="0" />
+      <input type="file" name="name" id="fileInput"  onchange="updateSize();" />
+      <input type="text" disabled="true" id="displaySize">  
+      <br />
+      <input type="checkbox" id="force" checked="" name="force" />
+      <label for="force">Force overwrite</label>
+      <br />
+      <input type="submit" id="uploadSubmit" value="Upload to Portfolio" disabled="true" />
+    </form>
+  </body>
+</html>

@@ -20,7 +20,6 @@
       #displaySize { border: 0; background-color: white; }
     </style>
     <script>
-      
 function byID(id) {
   return document.getElementById(id);
 }
@@ -67,6 +66,23 @@ function getList() {
     .catch(function (err) {
     }); 
 }
+
+function doUpload() {
+  var url = "/upload" + dir;
+  fetch(url)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      if (data.length == 0) {
+      } else {
+        alert(data);
+      }
+    })
+    .catch(function (err) {
+    }); 
+}
+
     </script>
   </head>
   <body>
@@ -87,7 +103,7 @@ function getList() {
       <input type="checkbox" id="force" checked="" name="force" />
       <label for="force">Force overwrite</label>
       <br />
-      <input type="submit" id="uploadSubmit" value="Upload to Portfolio" disabled="true" />
+      <input type="button" id="uploadSubmit" value="Upload to Portfolio" disabled="true" onclick="doUpload()" />
     </form>
   </body>
 </html>

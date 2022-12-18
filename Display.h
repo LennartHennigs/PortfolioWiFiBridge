@@ -1,3 +1,17 @@
+/* ------------------------------------------------- */
+#include <Wire.h>
+#include <Adafruit_SSD1306.h>
+
+/* ------------------------------------------------- */
+
+#define DISPLAY_I2C     0x3C
+#define DISPLAY_WIDTH   128
+#define DISPLAY_HEIGHT  64
+#define DISPLAY_LINE    10
+
+/* ------------------------------------------------- */
+Adafruit_SSD1306 display(DISPLAY_WIDTH, DISPLAY_HEIGHT, &Wire, -1);
+/* ------------------------------------------------- */
 
 void clearDisplay();
 void initDisplay();
